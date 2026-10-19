@@ -7,7 +7,7 @@
 | Offline demo | Git, Python 3.10+; no accounts or packages |
 | Live discovery | Python and network access; a complete tracker export |
 | Browser applications | A local agent with Chrome, Gmail, and Notion tools; Chrome and Simplify |
-| Background email monitor | macOS, Codex CLI with compatible connectors, Google Cloud CLI/project, monitor packages |
+| Background email monitor | macOS, Python 3.11+ (3.12 recommended), Codex CLI with compatible connectors, Google Cloud CLI/project, monitor packages |
 
 The browser workflow runs in a local agent session such as ChatGPT Work with Chrome. Installing the Codex CLI alone does not provide signed-in browser control. The optional monitor uses Codex's App Server and specific tool names; its preflight checks compatibility.
 

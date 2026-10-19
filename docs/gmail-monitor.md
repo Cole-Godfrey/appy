@@ -36,10 +36,10 @@ In [Google Cloud Console](https://console.cloud.google.com/), select your projec
 3. Create an OAuth client with application type Desktop app. Download the JSON outside the checkout, such as your Downloads folder. Use a client from the same project as the topic.
 4. If Google requests public information pages, provide pages for your own deployment that accurately describe its data use. Do not claim this repository hosts a shared OAuth service. Use [data handling](privacy.md) as a description of Appy's behavior.
 
-Create the runtime environment and authorize the applicant's mailbox:
+Install Python 3.12, then create the runtime environment and authorize the applicant's mailbox. Discovery and the offline demo still support Python 3.10; the Cloud packages need a Python version their maintainers support.
 
 ```sh
-python3 -m venv "$HOME/Library/Application Support/Appy/venv"
+python3.12 -m venv "$HOME/Library/Application Support/Appy/venv"
 "$HOME/Library/Application Support/Appy/venv/bin/python" -m pip install \
   -r requirements-monitor.txt
 "$HOME/Library/Application Support/Appy/venv/bin/python" gmail_monitor_setup.py \

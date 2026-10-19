@@ -31,9 +31,9 @@ Edit these after the pilot. Add only results you measured and personal details y
 
 ### X
 
-> I open sourced Appy, the workflow I use for job applications. It finds internships, checks a Notion tracker for duplicates, and helps a local agent fill reviewed forms. An optional Gmail monitor keeps recruiting replies attached to the right role. Try the offline demo: https://github.com/Cole-Godfrey/appy
+> I released Appy, my internship application workflow. It finds roles, skips ones already in Notion, and helps a local agent fill reviewed forms. An optional Gmail monitor tracks replies. Try the offline demo: https://github.com/Cole-Godfrey/appy
 
-Use the video as the main attachment. Split the copy into a short thread if needed; link once. A second post can show the skipped duplicate and explain the setup.
+Use the video as the main attachment. A second post can show the skipped duplicate and explain the setup.
 
 ### LinkedIn
 
