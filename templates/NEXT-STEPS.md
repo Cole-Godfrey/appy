@@ -1,3 +1,3 @@
-# Next actions
+# Next steps
 
-Keep pending assessments, interviews, and requested follow-ups here. Include deadlines and tracker links.
+Once an entry has been marked complete, remove it.

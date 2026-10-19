@@ -1,92 +1,42 @@
-<p align="center">
-  <a href="https://cole-godfrey.github.io/appy/"><img src="docs/assets/banner.png" alt="Appy. Your internship search, handled. An agent session listing internships posted in the last three days." width="100%"></a>
-</p>
+# Appy
 
-<p align="center">
-  <a href="https://github.com/Cole-Godfrey/appy/actions/workflows/ci.yml"><img src="https://github.com/Cole-Godfrey/appy/actions/workflows/ci.yml/badge.svg" alt="Tests"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-5a9bfc?style=flat-square" alt="MIT license"></a>
-  <img src="https://img.shields.io/badge/python-3.10%2B-5a9bfc?style=flat-square" alt="Python 3.10 or later">
-</p>
+A local AI-agent workflow for internship applications. The agent finds new roles, skips ones already in your Notion tracker, fills applications with Simplify in Chrome, enters emailed verification codes from Gmail, and records each confirmed submission in Notion.
 
-Appy is an open-source job search workflow for your AI agent. It finds internships posted this week, fills applications with your review, and files every recruiter reply under the right role in Notion.
+## Requirements
 
-**[See this week's internships](https://cole-godfrey.github.io/appy/)** · [Setup guide](docs/setup.md) · [How it works](docs/architecture.md) · [Contribute](CONTRIBUTING.md)
+- A local agent with Chrome control and Notion and Gmail MCP connections, such as Codex
+- Chrome with [Simplify Copilot](https://simplify.jobs/copilot), signed in with your profile
+- A Notion tracker database with Company, Position, Status, Next Action, application date, URL, and Resume Used
+- Python 3.10+ (no packages)
+- Optional: a [TheirStack](https://theirstack.com) API key
 
-## Get a shortlist in one command
-
-Python 3.10+ only. No account, key or packages.
+## Setup
 
 ```sh
 git clone https://github.com/Cole-Godfrey/appy.git
 cd appy
-python3 shortlist.py
+cp templates/*.md .
+cp .env.example .env
 ```
 
-![shortlist.py listing real internships posted in the last three days](docs/assets/terminal.png)
+1. Fill in `INFORMATION.md` and put your resume in this folder.
+2. Set `NOTION_TRACKER_ID` in `.env` to your tracker's data source (`collection://…`).
+3. Review `APPLICATION_GUIDE.md`; its answer preferences and permissions are the agent's rules.
+
+Your profile, questions, next steps, `.env`, and PDFs are Git-ignored.
+
+## Use
+
+Open this folder in your agent and prompt it, for example:
+
+> Submit 10 internship applications for SWE, ML, or quant roles. Follow APPLICATION_GUIDE.md, read INFORMATION.md, use Simplify in your own Chrome tab group, retrieve emailed verification codes through Gmail MCP, and check/update the tracker through Notion MCP. Add jobs only after confirmed submission. Put questions in QUESTIONS.md.
+
+The agent exports the tracker and runs discovery itself:
 
 ```sh
-python3 shortlist.py --field quant --days 7       # software, data, quant, hardware, product
-python3 shortlist.py --where "New York, Remote"   # match locations
-python3 shortlist.py --tracker applied.txt        # skip roles you applied to: one URL per line, or a Notion export
-python3 shortlist.py --json                       # for scripts and agents
+python3 discover_jobs.py --tracker tmp/tracker.json > tmp/jobs.json
 ```
 
-Listings come from the public [SimplifyJobs](https://github.com/SimplifyJobs/Summer2027-Internships) feed, filtered by Appy's discovery rules. Offline? `--sample` uses fictional listings.
+Tests: `python3 -m unittest`
 
-## Let your agent apply
-
-```sh
-python3 setup_workspace.py
-```
-
-Then follow the [setup guide](docs/setup.md) to add your profile, connect Notion and Gmail, and configure Chrome with Simplify. Start with a shortlist or one reviewed application.
-
-| Part | What it does | What you need |
-| --- | --- | --- |
-| Shortlist | Recent roles by field and place, minus ones you applied to | Python |
-| Discovery | Adds Greenhouse and Ashby boards, career-fair companies, optional TheirStack | Python; a tracker export |
-| Applications | Fills forms from your facts, verifies receipts, records submissions | Local agent with browser tools, Chrome, Notion; Gmail for codes |
-| Email monitor | Matches incoming mail to the right tracker row and next step | macOS, Codex CLI, Gmail and Notion tools, Google Cloud |
-
-Discovery targets summer internships in software, ML, data, quant, and related technical roles. The application rules work for other searches.
-
-## From posting to reply
-
-```mermaid
-flowchart LR
-    A[Public feeds] --> C[Shortlist]
-    B[TheirStack · optional] --> C
-    C --> D[Agent + Chrome + Simplify]
-    D --> E[Reviewed employer form]
-    E --> F[Verified receipt]
-    F --> G[Notion tracker]
-    H[Gmail reply] --> I[Optional local monitor]
-    I --> G
-    I --> J[Next actions]
-```
-
-The agent follows [APPLICATION_GUIDE.md](APPLICATION_GUIDE.md). It uses documented facts, checks duplicates before applying, and records a submission after confirming the employer receipt. Your prompt sets whether it may submit.
-
-## Your data
-
-Personal working files, resumes, tokens, and tracker exports are ignored by Git. The public repo contains blank templates and fictional fixtures. AI providers and connected services still process the information you send them; read [data handling](docs/privacy.md) before connecting accounts.
-
-## Development
-
-```sh
-python3 -m unittest discover -v
-python3 scripts/check_public.py
-```
-
-Tests use mocks and local fixtures. The site in `site/` is static; a [scheduled workflow](.github/workflows/pages.yml) refreshes its listings every six hours. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
-
-| Documentation | |
-| --- | --- |
-| [Complete setup](docs/setup.md) | Profile, tools, first run, troubleshooting |
-| [Notion tracker](docs/notion.md) | Schema, data source ID, complete exports |
-| [Discovery reference](docs/discovery.md) | Sources, filters, costs, output |
-| [Optional Gmail monitor](docs/gmail-monitor.md) | Cloud setup, OAuth, macOS service |
-| [Example prompts](docs/prompts.md) | Shortlists, reviewed applications, email catch-up |
-| [Launch plan](docs/launch-plan.md) | Channels, schedule, ready-to-edit posts |
-
-Appy is independent of OpenAI, Notion, Google, SimplifyJobs, and Simplify. [MIT licensed](LICENSE).
+MIT licensed.

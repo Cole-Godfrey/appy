@@ -60,7 +60,6 @@ class DiscoveryTests(unittest.TestCase):
             tracker = Path(directory) / "tracker.json"
             tracker.write_text("[]")
             with patch("sys.argv", ["discover_jobs.py", "--tracker", str(tracker), "--year", "2028", "--theirstack-limit", "0"]), \
-                    patch.object(jobs, "career_fair_companies", return_value=[]), \
                     patch.object(jobs, "fetch", return_value=[]) as fetch, \
                     contextlib.redirect_stdout(io.StringIO()):
                 jobs.main()
@@ -200,10 +199,8 @@ class TheirStackTests(unittest.TestCase):
         self.assertEqual(request.get_header("Authorization"), "Bearer test-key")
         self.assertEqual(json.loads(request.data), {"limit": 1})
 
-    def test_career_fair_aliases_and_company_matching(self):
-        companies = self.directory / "companies.md"
-        companies.write_text("Watch these companies:\n\n- Acme Devices (ACME)\n- Harbor\n- Harbor\n")
-        names = jobs.career_fair_companies(companies)
+    def test_company_aliases_and_matching(self):
+        names = jobs.company_names("Acme Devices (ACME)") + ["Harbor"]
         self.assertEqual(names, ["Acme Devices (ACME)", "Acme Devices", "ACME", "Harbor"])
         self.assertTrue(jobs.company_matches("HARBOR", names))
         self.assertTrue(jobs.company_matches("ACME", names))
@@ -271,13 +268,12 @@ class TheirStackTests(unittest.TestCase):
             _, errors = jobs.theirstack_jobs("test-key", 2027)
         self.assertIn("truncated results", errors[0])
 
-    def test_cli_default_searches_recent_and_career_fair_and_enriches_new_boards(self):
+    def test_cli_default_searches_recent_and_enriches_new_boards(self):
         row = self.posting(final_url="https://job-boards.greenhouse.io/acme/jobs/123")
         board = {"jobs": [{"id": 123, "title": row["job_title"], "absolute_url": row["final_url"]}]}
         detail = {"content": "<p>Live employer description</p>", "questions": [{"label": "Graduation"}]}
         with patch.object(jobs, "theirstack_key", return_value="test-key"), \
-                patch.object(jobs, "career_fair_companies", return_value=["ACME"]), \
-                patch.object(jobs, "theirstack_search", side_effect=[{"data": [row]}, {"data": []}]) as search, \
+                patch.object(jobs, "theirstack_search", return_value={"data": [row]}) as search, \
                 patch.object(jobs, "fetch", side_effect=[[], board, detail]):
             result = self.cli()
         self.assertEqual(len(result["jobs"]), 1)
@@ -285,9 +281,8 @@ class TheirStackTests(unittest.TestCase):
         self.assertEqual(result["jobs"][0]["description"], "Live employer description")
         self.assertEqual(result["jobs"][0]["posted_at"], "2026-10-10T00:00:00+00:00")
         self.assertEqual(result["jobs"][0]["reference_url"], row["source_url"])
-        self.assertEqual(search.call_args_list[0].args[0]["posted_at_max_age_days"], 3)
-        self.assertEqual(search.call_args_list[1].args[0]["posted_at_max_age_days"], 90)
-        self.assertEqual(search.call_args_list[1].args[0]["company_name_case_insensitive_or"], ["ACME"])
+        self.assertEqual(search.call_count, 1)
+        self.assertEqual(search.call_args.args[0]["posted_at_max_age_days"], 3)
         self.assertEqual(result["warnings"], [])
 
     def test_cli_company_date_filters_apply_to_public_results_too(self):
@@ -304,32 +299,29 @@ class TheirStackTests(unittest.TestCase):
         self.assertEqual(result["jobs"][0]["url"], "https://example.com/0")
         self.assertEqual(search.call_count, 1)
 
-    def test_cli_career_fair_scope_and_disable_switch(self):
+    def test_cli_company_scope_and_disable_switch(self):
         with patch.object(jobs, "theirstack_key", return_value="test-key"), \
-                patch.object(jobs, "career_fair_companies", return_value=["ACME"]), \
                 patch.object(jobs, "theirstack_search", return_value={"data": [self.posting(company="ACME")]}) as search, \
                 patch.object(jobs, "fetch", return_value=[]):
-            result = self.cli(["--career-fair"])
+            result = self.cli(["--company", "ACME"])
         self.assertEqual([row["company"] for row in result["jobs"]], ["ACME"])
         self.assertEqual(search.call_count, 1)
+        self.assertEqual(search.call_args.args[0]["posted_at_max_age_days"], 90)
         with patch.object(jobs, "theirstack_key") as key, \
-                patch.object(jobs, "career_fair_companies", return_value=[]), \
                 patch.object(jobs, "fetch", return_value=[]):
             self.assertEqual(self.cli(["--theirstack-limit", "0"])["warnings"], [])
         key.assert_not_called()
 
-    def test_cli_country_filter_normalizes_and_applies_to_both_searches(self):
+    def test_cli_country_filter_normalizes(self):
         with patch.object(jobs, "theirstack_key", return_value="test-key"), \
-                patch.object(jobs, "career_fair_companies", return_value=["ACME"]), \
                 patch.object(jobs, "theirstack_search", return_value={"data": []}) as search, \
                 patch.object(jobs, "fetch", return_value=[]):
             self.cli(["--theirstack-country", "us", "--theirstack-country", "US"])
-        self.assertEqual(search.call_count, 2)
+        self.assertEqual(search.call_count, 1)
         self.assertTrue(all(call.args[0]["job_country_code_or"] == ["US"] for call in search.call_args_list))
 
     def test_cli_simplify_failure_keeps_theirstack_results(self):
         with patch.object(jobs, "theirstack_key", return_value="test-key"), \
-                patch.object(jobs, "career_fair_companies", return_value=[]), \
                 patch.object(jobs, "theirstack_search", return_value={"data": [self.posting()]}), \
                 patch.object(jobs, "fetch", side_effect=OSError("offline")):
             result = self.cli()
@@ -340,7 +332,6 @@ class TheirStackTests(unittest.TestCase):
         feed = [{"company_name": "Acme", "title": "Software Intern", "active": True,
                  "url": "https://example.com/job", "date_posted": "2026-10-10"}]
         with patch.object(jobs, "theirstack_key", return_value="test-key"), \
-                patch.object(jobs, "career_fair_companies", return_value=[]), \
                 patch.object(jobs, "theirstack_search", side_effect=HTTPError(jobs.THEIRSTACK, 402, "No credits", {}, None)), \
                 patch.object(jobs, "fetch", return_value=feed):
             result = self.cli()

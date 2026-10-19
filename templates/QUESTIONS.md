@@ -1,3 +1,3 @@
-# Questions
+# Pending questions
 
-Keep unanswered applicant questions here. Remove resolved entries.
+Only unresolved application questions and actionable bugs. Remove resolved entries.

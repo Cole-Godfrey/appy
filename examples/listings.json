@@ -1,5 +1,0 @@
-[
-  {"company_name": "Northstar Labs", "category": "Software", "title": "Software Engineer Intern - Summer 2027", "url": "https://example.com/northstar/jobs/101?utm_source=demo", "active": true, "terms": ["Summer 2027"], "locations": ["Remote"], "date_posted": "2026-10-18T10:00:00Z"},
-  {"company_name": "Harbor Systems", "category": "AI/ML/Data", "title": "Machine Learning Intern - Summer 2027", "url": "https://example.com/harbor/jobs/202", "active": true, "terms": ["Summer 2027"], "locations": ["Remote"], "date_posted": "2026-10-18T09:00:00Z"},
-  {"company_name": "Juniper Research", "category": "Software", "title": "Software Engineer Intern - Summer 2027", "url": "https://example.com/juniper/jobs/303", "active": true, "terms": ["Summer 2027"], "locations": ["New York"], "date_posted": "2026-10-17T12:00:00Z"}
-]

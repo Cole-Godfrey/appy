@@ -55,11 +55,6 @@ def company_names(name):
     return names
 
 
-def career_fair_companies(path=ROOT / "CAREER-FAIR-COMPANIES.md"):
-    return list(dict.fromkeys(alias for name in re.findall(r"^\s*[-*]\s+(.+)$", path.read_text(), re.M)
-                              for alias in company_names(name)))
-
-
 def company_matches(name, companies):
     return not companies or bool({text_key(alias) for alias in company_names(name)}
                                  & {text_key(company) for company in companies})
@@ -329,7 +324,6 @@ def main():
     parser.add_argument("--year", type=int, default=2027)
     parser.add_argument("--limit", type=int, default=50, help="0 returns all candidates")
     parser.add_argument("--company", action="append", default=[], help="Exact company name, case insensitive; repeatable")
-    parser.add_argument("--career-fair", action="store_true", help="Restrict to CAREER-FAIR-COMPANIES.md (combined with --company)")
     parser.add_argument("--posted-after", type=iso_date, help="Inclusive publication date, YYYY-MM-DD; excludes unknown dates")
     parser.add_argument("--posted-before", type=iso_date, help="Inclusive publication date, YYYY-MM-DD; excludes unknown dates")
     parser.add_argument("--theirstack-limit", type=int, default=50, help="Maximum billable rows per search; 0 disables TheirStack")
@@ -355,18 +349,7 @@ def main():
     except (OSError, ValueError, KeyError) as error:
         parser.exit(1, f"Discovery failed: {error}\n")
     errors, theirstack = [], []
-    try:
-        fair_companies = career_fair_companies()
-    except OSError as error:
-        if args.career_fair:
-            parser.exit(1, f"Career-fair discovery failed: {error}\n")
-        fair_companies = []
-        errors.append(f"Career-fair companies: {error}")
     companies = list(dict.fromkeys(alias for company in args.company for alias in company_names(company)))
-    if args.career_fair:
-        companies = list(dict.fromkeys(companies + fair_companies))
-        if not companies:
-            parser.exit(1, "Career-fair company list is empty\n")
     try:
         listings = simplify_jobs(fetch(SIMPLIFY.format(year=args.year)), args.year)
     except (OSError, ValueError, KeyError) as error:
@@ -379,18 +362,14 @@ def main():
             api_key = ""
             errors.append("TheirStack: could not read THEIRSTACK_API_KEY")
         if api_key:
-            # Recent general search plus an older-job search for career-fair companies.
-            searches = [(companies, 90 if companies else 3)]
-            if not companies and fair_companies:
-                searches.append((fair_companies, 90))
-            for names, days in searches:
-                found, failed = theirstack_jobs(
-                    api_key, args.year, names,
-                    args.posted_after.isoformat() if args.posted_after else None,
-                    args.posted_before.isoformat() if args.posted_before else None,
-                    max_age_days=days, limit=args.theirstack_limit, countries=countries)
-                theirstack.extend(found)
-                errors.extend(failed)
+            # Company searches look back further than the general recent search.
+            found, failed = theirstack_jobs(
+                api_key, args.year, companies,
+                args.posted_after.isoformat() if args.posted_after else None,
+                args.posted_before.isoformat() if args.posted_before else None,
+                max_age_days=90 if companies else 3, limit=args.theirstack_limit, countries=countries)
+            theirstack.extend(found)
+            errors.extend(failed)
         else:
             errors.append("TheirStack: THEIRSTACK_API_KEY is missing; using public feeds")
     boards, ashby_boards = {}, {}

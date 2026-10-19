@@ -1,16 +1,40 @@
-# Applicant facts
+# Applicant information
 
-- Name: [fill in]
-- Email: you@example.com
-- Phone: [fill in]
-- Location and time zone: [fill in]
-- Resume: private/resume.pdf
-- Portfolio / LinkedIn / GitHub: [fill in or remove]
-- Education, graduation date, GPA if disclosed: [fill in]
-- Work authorization and sponsorship: [fill in]
-- Target roles, locations, term: [fill in]
-- Availability and relocation preferences: [fill in]
-- Demographic response preferences: [fill in]
-- Verified experience and skills: [fill in]
-
-Use facts you can support. Remove optional fields you do not want the agent to use.
+- Name:
+- Legal full name:
+- Location:
+- Mailing address:
+- Age:
+- Pronouns:
+- Email:
+- University email:
+- Phone:
+- Website:
+- LinkedIn:
+- GitHub:
+- Education:
+- High-school graduation:
+- Coursework completed:
+- Coding experience:
+- Language experience (years):
+- GPA:
+- Honors:
+- Certification:
+- ACT:
+- SAT:
+- Competition participation:
+- Citizenship:
+- U.S. work authorization:
+- Present or future visa sponsorship required:
+- Target roles:
+- Current offers:
+- Summer 2027 availability:
+- Relocation:
+- Research:
+- Employment:
+- Projects:
+- Tutoring or TA experience:
+- Employee relationships:
+- Financial relationship, outside-business, investment, IP, and government/conflict declarations:
+- Resume:
+- Transcript:
