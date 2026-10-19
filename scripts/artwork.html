@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Appy artwork</title>
+<link href="https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@300&family=Stack+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0a0d14; --surface: #131824; --surface-2: #1a2130; --ink: #e9edf3; --muted: #8f98a8; --accent: #5a9bfc; --accent-strong: #80b3fd; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); font-family: "Stack Sans Text", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .view { display: none; position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+  .wordmark { position: absolute; left: 48px; top: 38px; font: 300 30px/1 "Stack Sans Headline", sans-serif; letter-spacing: -0.03em; }
+  .title { position: absolute; left: 48px; font: 300 76px/1.05 "Stack Sans Headline", sans-serif; letter-spacing: -0.022em; white-space: nowrap; }
+  .lead { position: absolute; left: 48px; width: 470px; font-size: 21px; line-height: 1.45; }
+  .url { position: absolute; left: 48px; bottom: 40px; font-size: 19px; color: var(--muted); }
+  .stage { position: absolute; left: 600px; right: 0; bottom: 0; background: var(--accent); clip-path: polygon(0 0, 190px 0, 230px 40px, 100% 40px, 100% 100%, 0 100%); padding: 84px 0 0 52px; }
+  .session { width: 570px; background: var(--bg); border-radius: 10px; font-size: 15px; line-height: 1.45; }
+  .bar { display: flex; justify-content: space-between; padding: 13px 18px; background: var(--surface); border-radius: 10px 10px 0 0; }
+  .bar b { font-weight: 500; } .bar span { color: var(--muted); }
+  .msg { display: grid; grid-template-columns: 56px 1fr; column-gap: 12px; padding: 16px 18px; }
+  .msg.you { background: var(--surface-2); }
+  .who { color: var(--muted); font-weight: 500; }
+  .chip { display: inline-block; padding: 0 7px; border: 1px solid #2c3548; border-radius: 6px; color: var(--accent-strong); font-weight: 500; }
+  .hits { display: grid; gap: 2px; margin-top: 12px; }
+  .hit { display: grid; grid-template-columns: 1fr auto; padding: 9px 12px; background: var(--surface); border-radius: 6px; }
+  .hit b { font-weight: 500; } .hit i { font-style: normal; color: var(--muted); }
+  .hit span { grid-column: 1 / -1; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #terminal { padding: 48px; }
+  .term { height: 100%; background: var(--surface); border-radius: 12px; overflow: hidden; }
+  .term-bar { padding: 16px 24px; background: var(--surface-2); color: var(--muted); font-size: 17px; }
+  pre { padding: 26px 30px; font: 18px/1.62 ui-monospace, "SF Mono", Menlo, monospace; color: var(--ink); white-space: pre; }
+  pre .dim { color: var(--muted); } pre b { font-weight: 600; } pre .cmd { color: var(--accent-strong); } pre .link { color: #a9c6f5; }
+</style>
+</head>
+<body>
+<section class="view" id="banner">
+  <p class="wordmark">appy</p>
+  <h1 class="title" style="top: 130px">Your internship<br>search, handled</h1>
+  <p class="lead" style="top: 326px">An open-source job search workflow for your AI agent. It finds new internships, applies with your review, and files every reply under the right role.</p>
+  <div class="stage" style="top: 196px; left: 660px"><div class="session" data-session></div></div>
+</section>
+
+<section class="view" id="social">
+  <p class="wordmark">appy</p>
+  <h1 class="title" style="top: 150px">Your internship<br>search, handled</h1>
+  <p class="lead" style="top: 346px">An open-source job search workflow for your AI agent.</p>
+  <p class="url">github.com/Cole-Godfrey/appy</p>
+  <div class="stage" style="top: 300px; left: 640px"><div class="session" data-session></div></div>
+</section>
+
+<section class="view" id="terminal">
+  <div class="term"><p class="term-bar">~/appy</p><pre id="output"></pre></div>
+</section>
+
+<script>
+const DATA = /*DATA*/{ "roles": [], "text": "" }/*END*/;
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const now = Date.parse(DATA.generated_at || new Date().toISOString());
+const ago = (t) => { const h = Math.floor((now - Date.parse(t)) / 36e5); return h < 1 ? 'just now' : h < 48 ? h + 'h ago' : Math.floor(h / 24) + 'd ago'; };
+const session = `<div class="bar"><b>Internship search</b><span>Local agent · ~/appy</span></div>
+  <div class="msg you"><span class="who">You</span><p>Find <span class="chip">technical</span> internships posted in the <span class="chip">last ${DATA.days} days</span>. Skip anything I've applied to.</p></div>
+  <div class="msg"><span class="who">Appy</span><div><p><b style="font-weight:500">${DATA.roles.length} technical roles</b> posted in the last ${DATA.days} days. The newest:</p>
+  <div class="hits">${DATA.roles.slice(0, 5).map((r) => `<div class="hit"><b>${esc(r.company)}</b><i>${ago(r.posted_at)}</i><span>${esc(r.title)} · ${esc(r.locations.slice(0, 2).join('; '))}</span></div>`).join('')}</div></div></div>`;
+document.querySelectorAll('[data-session]').forEach((el) => { el.innerHTML = session; });
+document.getElementById('output').innerHTML = ['<span class="cmd">$ python3 shortlist.py</span>', ''].concat(DATA.text.split('\n').map((line, i) => {
+  if (i === 0) return `<b>${esc(line)}</b>`;
+  if (i === 1 || /^(Skip|Let|…)/.test(line)) return `<span class="dim">${esc(line)}</span>`;
+  if (/^  https?:/.test(line)) return `  <span class="link">${esc(line.trim())}</span>`;
+  if (/^  \S.*·/.test(line)) return `<span class="dim">${esc(line)}</span>`;
+  if (/^  \S/.test(line)) { const [company, ...title] = line.trim().split('  '); return `  <b>${esc(company)}</b>  ${esc(title.join('  '))}`; }
+  if (line.trim()) return `<span class="dim">${esc(line)}</span>`;
+  return '';
+})).join('\n');
+document.getElementById(location.hash.slice(1) || 'banner').style.display = 'block';
+</script>
+</body>
+</html>

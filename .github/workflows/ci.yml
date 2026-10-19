@@ -22,5 +22,5 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m unittest discover -v
-      - run: python scripts/demo.py
+      - run: python shortlist.py --sample
       - run: python scripts/check_public.py

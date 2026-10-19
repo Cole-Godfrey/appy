@@ -7,12 +7,12 @@ Small fixes, clear bug reports, and setup improvements are welcome. Open an issu
 ```sh
 git clone https://github.com/Cole-Godfrey/appy.git
 cd appy
-python3 scripts/demo.py
+python3 shortlist.py --sample
 python3 -m unittest discover -v
 python3 scripts/check_public.py
 ```
 
-The tests and offline demo use the standard library and mocked services. Only the optional live monitor needs `requirements-monitor.txt`. Test that integration in an isolated environment with your own accounts.
+The tests and `shortlist.py` use the standard library; tests mock every service. Only the optional live monitor needs `requirements-monitor.txt`. Test that integration in an isolated environment with your own accounts.
 
 Keep Python compatible with 3.10+. Preserve complete pagination, conservative freshness, URL/role deduplication, atomic queue cursors, and retries triggered by new mail. Add focused tests for changed behavior. Avoid live network calls in unit tests.
 

@@ -11,6 +11,7 @@
 /private/
 /evidence/
 /tmp/
+/site/roles.json
 /oauth-info/
 *.pdf
 *.docx

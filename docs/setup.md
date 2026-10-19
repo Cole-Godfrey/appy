@@ -4,7 +4,7 @@
 
 | Use | Requirements |
 | --- | --- |
-| Offline demo | Git, Python 3.10+; no accounts or packages |
+| Shortlist | Git, Python 3.10+; no accounts or packages |
 | Live discovery | Python and network access; a complete tracker export |
 | Browser applications | A local agent with Chrome, Gmail, and Notion tools; Chrome and Simplify |
 | Background email monitor | macOS, Python 3.11+ (3.12 recommended), Codex CLI with compatible connectors, Google Cloud CLI/project, monitor packages |
@@ -18,7 +18,7 @@ Appy is free under the MIT license. Your agent plan or API usage, TheirStack sea
 ```sh
 git clone https://github.com/Cole-Godfrey/appy.git
 cd appy
-python3 scripts/demo.py
+python3 shortlist.py
 python3 -m unittest discover -v
 python3 setup_workspace.py
 ```

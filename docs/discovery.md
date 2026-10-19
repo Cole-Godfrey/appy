@@ -1,5 +1,7 @@
 # Discovery
 
+For a quick readable list from the public feed, run `python3 shortlist.py`. `discover_jobs.py` is the agent's full search: employer boards, career-fair companies, TheirStack, JSON output.
+
 ```sh
 python3 discover_jobs.py --tracker tmp/tracker.json --theirstack-limit 0
 ```

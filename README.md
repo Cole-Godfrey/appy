@@ -1,36 +1,39 @@
 <p align="center">
-  <img src="docs/assets/banner.svg" alt="Appy. Find the role. Keep the thread." width="100%">
+  <a href="https://cole-godfrey.github.io/appy/"><img src="docs/assets/banner.png" alt="Appy. Your internship search, handled. An agent session listing internships posted in the last three days." width="100%"></a>
 </p>
 
 <p align="center">
   <a href="https://github.com/Cole-Godfrey/appy/actions/workflows/ci.yml"><img src="https://github.com/Cole-Godfrey/appy/actions/workflows/ci.yml/badge.svg" alt="Tests"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-38450f?style=flat-square" alt="MIT license"></a>
-  <img src="https://img.shields.io/badge/python-3.10%2B-38450f?style=flat-square" alt="Python 3.10 or later">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-5a9bfc?style=flat-square" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/python-3.10%2B-5a9bfc?style=flat-square" alt="Python 3.10 or later">
 </p>
 
-Appy is an open source job application workflow for a local AI agent. It finds internships, checks your application history, helps fill employer forms, and keeps recruiting replies tied to the right role in Notion.
+Appy is an open-source job search workflow for your AI agent. It finds internships posted this week, fills applications with your review, and files every recruiter reply under the right role in Notion.
 
-[Setup guide](docs/setup.md) · [Try the demo](#try-it-offline) · [How it works](docs/architecture.md) · [Contribute](CONTRIBUTING.md)
+**[See this week's internships](https://cole-godfrey.github.io/appy/)** · [Setup guide](docs/setup.md) · [How it works](docs/architecture.md) · [Contribute](CONTRIBUTING.md)
 
-## See it work
+## Get a shortlist in one command
 
-![Offline demo using Appy's discovery filters on fictional listings](docs/assets/demo.gif)
-
-The demo uses fictional companies and the real deduplication code. It connects no accounts and submits no applications.
-
-## Try it offline
-
-You need Git and Python 3.10+. The demo has no package dependencies.
+Python 3.10+ only. No account, key or packages.
 
 ```sh
 git clone https://github.com/Cole-Godfrey/appy.git
 cd appy
-python3 scripts/demo.py
+python3 shortlist.py
 ```
 
-It reads three sample listings, skips the role already in the sample tracker, and returns two candidates. Run `python3 scripts/demo.py --json` to inspect the data.
+![shortlist.py listing real internships posted in the last three days](docs/assets/terminal.png)
 
-## Use it for your search
+```sh
+python3 shortlist.py --field quant --days 7       # software, data, quant, hardware, product
+python3 shortlist.py --where "New York, Remote"   # match locations
+python3 shortlist.py --tracker applied.txt        # skip roles you applied to: one URL per line, or a Notion export
+python3 shortlist.py --json                       # for scripts and agents
+```
+
+Listings come from the public [SimplifyJobs](https://github.com/SimplifyJobs/Summer2027-Internships) feed, filtered by Appy's discovery rules. Offline? `--sample` uses fictional listings.
+
+## Let your agent apply
 
 ```sh
 python3 setup_workspace.py
@@ -40,11 +43,12 @@ Then follow the [setup guide](docs/setup.md) to add your profile, connect Notion
 
 | Part | What it does | What you need |
 | --- | --- | --- |
-| Discovery | Searches public feeds, enriches Greenhouse and Ashby jobs, removes tracked roles | Python; TheirStack is optional |
-| Applications | Uses your facts and Simplify to fill forms, verifies receipts, records submissions | Local agent with browser tools, Chrome, Notion; Gmail for codes |
-| Email monitor | Detects incoming mail and runs an agent turn to update the matching tracker row | macOS, Codex CLI, Gmail and Notion tools, Google Cloud |
+| Shortlist | Recent roles by field and place, minus ones you applied to | Python |
+| Discovery | Adds Greenhouse and Ashby boards, career-fair companies, optional TheirStack | Python; a tracker export |
+| Applications | Fills forms from your facts, verifies receipts, records submissions | Local agent with browser tools, Chrome, Notion; Gmail for codes |
+| Email monitor | Matches incoming mail to the right tracker row and next step | macOS, Codex CLI, Gmail and Notion tools, Google Cloud |
 
-Discovery currently targets summer internships in software, ML, data, quant, and related technical roles. The application instructions can be adapted to other searches. This is a collection of scripts and agent workflows; setup includes connecting your own services.
+Discovery targets summer internships in software, ML, data, quant, and related technical roles. The application rules work for other searches.
 
 ## From posting to reply
 
@@ -74,7 +78,7 @@ python3 -m unittest discover -v
 python3 scripts/check_public.py
 ```
 
-Tests use mocks and local fixtures. See [CONTRIBUTING.md](CONTRIBUTING.md) for development and [SECURITY.md](SECURITY.md) for private reports.
+Tests use mocks and local fixtures. The site in `site/` is static; a [scheduled workflow](.github/workflows/pages.yml) refreshes its listings every six hours. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
 | Documentation | |
 | --- | --- |
@@ -85,4 +89,4 @@ Tests use mocks and local fixtures. See [CONTRIBUTING.md](CONTRIBUTING.md) for d
 | [Example prompts](docs/prompts.md) | Shortlists, reviewed applications, email catch-up |
 | [Launch plan](docs/launch-plan.md) | Channels, schedule, ready-to-edit posts |
 
-Appy is independent of OpenAI, Notion, Google, and Simplify. [MIT licensed](LICENSE).
+Appy is independent of OpenAI, Notion, Google, SimplifyJobs, and Simplify. [MIT licensed](LICENSE).

@@ -1,14 +1,12 @@
 # Artwork
 
-`banner.svg` uses outlined lettering so it renders consistently on GitHub. `social-preview.png` is 1280 × 640 for GitHub's social preview. `demo.gif` records actual output from `scripts/demo.py`; `demo.png` is its still frame. Every company in the demo is fictional.
+`banner.png` (README), `social-preview.png` (1280 × 640, GitHub social preview) and `terminal.png` are screenshots of `scripts/artwork.html` filled with real `shortlist.py` output, so company names reflect the feed on the build date.
 
-The palette is olive `#38450f` on bone `#ecebe7`. Display type is [Imbue](https://fonts.google.com/specimen/Imbue); supporting type is [Albert Sans](https://fonts.google.com/specimen/Albert+Sans), both available under the SIL Open Font License. The rendered assets contain no font files. The terminal uses a local monospace font.
+Palette: night `#0a0d14`, slate `#131824`, cornflower `#5a9bfc`. Type: [Stack Sans Headline and Stack Sans Text](https://fonts.google.com/specimen/Stack+Sans+Text) (SIL Open Font License), loaded from Google Fonts at build time. Taste direction: The product performs, seed 1090985831; the site in `site/` uses the same system.
 
-Taste direction: Type and nothing else, seed 787438446. The composition is adapted to a shallow GitHub banner; the full page inspector does not apply to static artwork.
-
-To rebuild, install Pillow and fonttools in an isolated environment, obtain the two fonts from their Google Fonts pages, and run:
+Rebuild with Chrome or Chromium installed (set `CHROME` if it is elsewhere):
 
 ```sh
-python3 scripts/build_assets.py --imbue /path/to/Imbue.ttf \
-  --albert /path/to/AlbertSans.ttf --mono /path/to/monospace.ttf
+python3 scripts/build_assets.py           # live feed
+python3 scripts/build_assets.py --sample  # fictional listings
 ```

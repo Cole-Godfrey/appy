@@ -21,6 +21,7 @@ flowchart TD
 
 | File | Responsibility |
 | --- | --- |
+| `shortlist.py` | Readable recent roles from the public feed; feeds the site's board |
 | `discover_jobs.py` | Source queries, enrichment, normalization, deduplication, freshness |
 | `appy_config.py` | Non-executing local setting reads; tracker ID validation |
 | `setup_workspace.py` | Creates private working files without overwriting them |
@@ -30,6 +31,7 @@ flowchart TD
 | `monitor_service.py` | macOS LaunchAgent lifecycle |
 | `APPLICATION_GUIDE.md` | Applicant facts, browser review, submission receipts, tracker rules |
 | `EMAIL_MONITOR.md` | Evidence matching, stage changes, next actions |
+| `site/` | Static website; the Pages workflow writes `roles.json` from `shortlist.py` |
 
 Discovery is read-only apart from output and optional API credit usage. Browser submissions require the user's scoped authorization. The monitor's instructions restrict it to recruiting evidence and next actions; those are agent instructions, not a sandbox that proves every model action safe.
 
