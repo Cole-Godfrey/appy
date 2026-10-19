@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security report
+    url: https://github.com/Cole-Godfrey/appy/security/advisories/new
+    about: Report private data exposure or a security vulnerability.
